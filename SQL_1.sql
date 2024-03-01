@@ -1,142 +1,136 @@
--- Active: 1709292013339@@127.0.0.1@3306@SQL_1
+-- MySQL dump 10.13  Distrib 8.0.36, for Linux (x86_64)
+--
+-- Host: localhost    Database: SQL_1
+-- ------------------------------------------------------
+-- Server version	8.0.36
 
-CREATE database SQL_1; 
-USE SQL_1;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- create table Students
-CREATE TABLE Students (
-    Snum int PRIMARY KEY,
-    Name varchar(30),
-    Major varchar(10),
-    Level char(3) CHECK (Level IN ('UN', 'MA', 'PhD')),
-    Age int CHECK (Age >= 18 AND Age <= 45)
-);
+--
+-- Table structure for table `Class`
+--
 
--- add some rows to Students
-INSERT INTO Students (Snum, Name, Major, Level, Age) 
-VALUES 
-(1, 'John', 'CS', 'UN', 20),
-(2, 'Jane', 'Eng', 'MA', 25),
-(3, 'Michael', 'Physics', 'PhD', 30);
+DROP TABLE IF EXISTS `Class`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Class` (
+  `ClassName` varchar(10) NOT NULL,
+  `Time` datetime DEFAULT NULL,
+  `Room` char(5) DEFAULT NULL,
+  `Fid` int DEFAULT NULL,
+  PRIMARY KEY (`ClassName`),
+  KEY `Fid` (`Fid`),
+  CONSTRAINT `Class_ibfk_1` FOREIGN KEY (`Fid`) REFERENCES `Faculty` (`Fid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- CREATE TABLE Faculty
-CREATE TABLE Faculty (
-    Fid int PRIMARY KEY,
-    Name varchar(10),
-    Dept varchar(10)
-);
+--
+-- Dumping data for table `Class`
+--
 
--- add some rows to Faculty
-INSERT INTO Faculty (Fid, Name, Dept) 
-VALUES 
-(1, 'Smith', 'CS'),
-(2, 'Johnson', 'Eng'),
-(3, 'Lee', 'Physics');
+LOCK TABLES `Class` WRITE;
+/*!40000 ALTER TABLE `Class` DISABLE KEYS */;
+INSERT INTO `Class` VALUES ('CS101','2024-03-01 09:00:00','R128',1),('CS201','2024-04-04 15:00:00','B-101',1),('ENG201','2024-03-02 10:30:00','B-202',2),('Math92','2024-03-02 10:30:00','B-203',4),('PHY301','2024-03-03 13:00:00','R128',3);
+/*!40000 ALTER TABLE `Class` ENABLE KEYS */;
+UNLOCK TABLES;
 
--- create table Class
-CREATE TABLE Class (
-    ClassName varchar(10) PRIMARY KEY,
-    Time Datetime,
-    Room char(5),
-    Fid int,
-    FOREIGN KEY (Fid) REFERENCES Faculty(Fid)
-);
+--
+-- Table structure for table `Enrolled`
+--
 
--- add some rows to table Class
-INSERT INTO Class (ClassName, Time, Room, Fid) 
-VALUES 
-('CS101', '2024-03-01 09:00:00', 'A101', 1),
-('ENG201', '2024-03-02 10:30:00', 'B202', 2),
-('PHY301', '2024-03-03 13:00:00', 'C303', 3);
+DROP TABLE IF EXISTS `Enrolled`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Enrolled` (
+  `Snum` int NOT NULL,
+  `ClassName` varchar(10) NOT NULL,
+  PRIMARY KEY (`Snum`,`ClassName`),
+  KEY `ClassName` (`ClassName`),
+  CONSTRAINT `Enrolled_ibfk_1` FOREIGN KEY (`Snum`) REFERENCES `Students` (`Snum`),
+  CONSTRAINT `Enrolled_ibfk_2` FOREIGN KEY (`ClassName`) REFERENCES `Class` (`ClassName`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- create table Enrolled
-CREATE TABLE Enrolled (
-    Snum int,
-    ClassName varchar(10),
-    PRIMARY KEY (Snum, ClassName),
-    FOREIGN KEY (Snum) REFERENCES Students(Snum),
-    FOREIGN KEY (ClassName) REFERENCES Class(ClassName)
-);
+--
+-- Dumping data for table `Enrolled`
+--
 
--- add some rows to Enrolled
-INSERT INTO Enrolled (Snum, ClassName) 
-VALUES 
-(1, 'CS101'),
-(2, 'ENG201'),
-(3, 'PHY301');
+LOCK TABLES `Enrolled` WRITE;
+/*!40000 ALTER TABLE `Enrolled` DISABLE KEYS */;
+INSERT INTO `Enrolled` VALUES (1,'CS101'),(4,'CS201'),(2,'ENG201'),(2,'Math92'),(4,'Math92'),(5,'Math92'),(6,'Math92'),(7,'Math92'),(3,'PHY301');
+/*!40000 ALTER TABLE `Enrolled` ENABLE KEYS */;
+UNLOCK TABLES;
 
--- Return the list of undergraduate students
-SELECT * 
-FROM Students 
-WHERE Level = 'UN';
+--
+-- Table structure for table `Faculty`
+--
 
--- Return the list of departments (Dept) of faculty members 
-SELECT DISTINCT Dept 
-FROM Faculty;
+DROP TABLE IF EXISTS `Faculty`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Faculty` (
+  `Fid` int NOT NULL,
+  `Name` varchar(10) DEFAULT NULL,
+  `Dept` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`Fid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- Return the list of classes (ClassName) which have students enroll in.  No duplicates should be printed in the answers 
-SELECT DISTINCT ClassName 
-FROM Enrolled;
+--
+-- Dumping data for table `Faculty`
+--
 
--- Return the list of classes located in the building B (room started with “B-“; for example room B1-203, B1-204,… )
-SELECT ClassName 
-FROM Class 
-WHERE Room LIKE 'B-%';
+LOCK TABLES `Faculty` WRITE;
+/*!40000 ALTER TABLE `Faculty` DISABLE KEYS */;
+INSERT INTO `Faculty` VALUES (1,'H.Merlin','CS'),(2,'Johnson','Eng'),(3,'Lee','Physics'),(4,'Thieu','SAMI');
+/*!40000 ALTER TABLE `Faculty` ENABLE KEYS */;
+UNLOCK TABLES;
 
--- Return the names of all students in CS (Major = "CS") who are enrolled in the course "Math92" 
-SELECT Students.Name
-FROM Students
-JOIN Enrolled ON Students.Snum = Enrolled.Snum
-JOIN Class ON Enrolled.ClassName = Class.ClassName
-WHERE Students.Major = 'CS' AND Class.ClassName = 'Math92';
+--
+-- Table structure for table `Students`
+--
 
--- Return the names of all undergraduate student in CS (Major = "CS") who are enrolled in the course "Math92" and are older than 25 years old 
-SELECT Students.Name
-FROM Students
-JOIN Enrolled ON Students.Snum = Enrolled.Snum
-JOIN Class ON Enrolled.ClassName = Class.ClassName
-WHERE Students.Major = 'CS' 
-AND Class.ClassName = 'Math92' 
-AND Students.Level = 'UN' 
-AND Students.Age > 25;
+DROP TABLE IF EXISTS `Students`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `Students` (
+  `Snum` int NOT NULL,
+  `Name` varchar(30) DEFAULT NULL,
+  `Major` varchar(10) DEFAULT NULL,
+  `Level` char(3) DEFAULT NULL,
+  `Age` int DEFAULT NULL,
+  PRIMARY KEY (`Snum`),
+  CONSTRAINT `Students_chk_1` CHECK ((`Level` in (_utf8mb4'UN',_utf8mb4'MA',_utf8mb4'PhD'))),
+  CONSTRAINT `Students_chk_2` CHECK (((`Age` >= 18) and (`Age` <= 45)))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- Return the names of all undergraduate student in CS (Major = "CS") who are enrolled in the course "Math92" and are older than some of PhD students
-SELECT DISTINCT s.Name
-FROM Students s
-JOIN Enrolled e ON s.Snum = e.Snum
-JOIN Class c ON e.ClassName = c.ClassName
-WHERE s.Major = 'CS' 
-AND c.ClassName = 'Math92' 
-AND s.Level = 'UN' 
-AND s.Age > (SELECT MIN(Age) FROM Students WHERE Level = 'PhD');
+--
+-- Dumping data for table `Students`
+--
 
--- Return the names of all classes that either meet in room R128 or are taught by "H.Merlin".
-SELECT ClassName
-FROM Class
-WHERE Fid IN (SELECT Fid FROM Faculty WHERE Name = 'H.Merlin')
-UNION
-SELECT ClassName
-FROM Class
-WHERE Room = 'R128';
+LOCK TABLES `Students` WRITE;
+/*!40000 ALTER TABLE `Students` DISABLE KEYS */;
+INSERT INTO `Students` VALUES (1,'John','CS','UN',20),(2,'Jane','Eng','MA',25),(3,'Michael','Physics','PhD',26),(4,'Khanh','CS','UN',22),(5,'Hai','CS','UN',26),(6,'Khanh','CS','UN',20),(7,'Hai','CS','UN',27),(8,'Nghia','Physics','UN',18),(9,'Trang','Eng','UN',19);
+/*!40000 ALTER TABLE `Students` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
--- Return all students who are enrolled in two classes that meet at the same time
-SELECT DISTINCT s.Name
-FROM Students s
-JOIN Enrolled e1 ON s.Snum = e1.Snum
-JOIN Enrolled e2 ON s.Snum = e2.Snum AND e1.ClassName != e2.ClassName
-JOIN Class c1 ON e1.ClassName = c1.ClassName
-JOIN Class c2 ON e2.ClassName = c2.ClassName
-WHERE c1.Time = c2.Time;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Return all students who do not enroll in any class yet
-SELECT Name
-FROM Students
-LEFT JOIN Enrolled ON Students.Snum = Enrolled.Snum
-WHERE Enrolled.Snum IS NULL;
-
--- Return all classes that have less than 20 enrolled students 
-SELECT Class.ClassName
-FROM Class
-LEFT JOIN Enrolled ON Class.ClassName = Enrolled.ClassName
-GROUP BY Class.ClassName
-HAVING COUNT(Enrolled.Snum) < 20 OR COUNT(Enrolled.Snum) IS NULL;
+-- Dump completed on 2024-03-01 19:29:15
